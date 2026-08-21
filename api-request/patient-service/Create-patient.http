@@ -1,0 +1,13 @@
+### Create a new patient entity
+POST http://localhost:4000/patients
+Content-Type: application/json
+
+{
+  "name": "Jessica",
+  "email": "jerrica@gmail.com",
+  "address": "1675 Shelter, Atlanta, GA 3786",
+  "registeredDate": "2026-08-21",
+  "dateOfBirth": "1987-07-17"
+}
+
+###

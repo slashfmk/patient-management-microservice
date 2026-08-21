@@ -1,12 +1,12 @@
 package com.oxygenik.patientservice.controller;
 
 
+import com.oxygenik.patientservice.dto.PatientRequestDTO;
 import com.oxygenik.patientservice.dto.PatientResponseDTO;
 import com.oxygenik.patientservice.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +23,11 @@ public class PatientController {
     @GetMapping
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
         return ResponseEntity.ok(patientService.getPatients());
+    }
+
+    @PostMapping
+    public ResponseEntity<PatientResponseDTO> createPatient(@Valid @RequestBody PatientRequestDTO patientRequestDTO) {
+        var savedPatient = this.patientService.createPatient(patientRequestDTO);
+        return ResponseEntity.ok().body(savedPatient);
     }
 }
