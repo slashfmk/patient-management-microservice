@@ -1,0 +1,12 @@
+### GET request to example server
+PUT http://localhost:4000/patients/123e4567-e89b-12d3-a456-426614174000
+
+{
+    "name": "Yannick Fumukani",
+    "email": "slashcs7@@gmail.com",
+    "address": "701 Sherton, New york City, NY 3786",
+    "registeredDate": "2026-08-21",
+    "dateOfBirth": "1993-12-17"
+}
+
+###
