@@ -31,10 +31,16 @@
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
-        <!-- gRPC SERVER -->
+        <!-- gRPC Server -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-grpc-server</artifactId>
+        </dependency>
+
+        <!-- gRPC Reflection -->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-services</artifactId>
         </dependency>
 
         <!-- Tests -->

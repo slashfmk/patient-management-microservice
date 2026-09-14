@@ -12,7 +12,7 @@ import org.springframework.grpc.server.service.GrpcService;
 @GrpcService
 public class BillingGrpcService extends BillingServiceGrpc.BillingServiceImplBase {
 
-    private static final Logger log =  LoggerFactory.getLogger(BillingGrpcService.class.getName());
+    private static final Logger log =  LoggerFactory.getLogger(BillingGrpcService.class);
 
     @Override
     public void createBillingAccount(BillingRequest billingRequest, StreamObserver<BillingResponse> responseObserver) {
