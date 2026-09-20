@@ -4,6 +4,7 @@ import com.oxygenik.patientservice.dto.PatientRequestDTO;
 import com.oxygenik.patientservice.dto.PatientResponseDTO;
 import com.oxygenik.patientservice.exception.EmailAlreadyExistsException;
 import com.oxygenik.patientservice.exception.PatientNotFoundException;
+import com.oxygenik.patientservice.grpc.BillingServiceGrpcClient;
 import com.oxygenik.patientservice.mapper.PatientMapper;
 import com.oxygenik.patientservice.model.Patient;
 import com.oxygenik.patientservice.repository.PatientRepository;
@@ -17,9 +18,11 @@ import java.util.UUID;
 public class PatientService implements IPatientService {
 
     private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
-    public PatientService(PatientRepository patientRepository) {
+    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
         this.patientRepository = patientRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
 
     public List<PatientResponseDTO> getPatients() {
@@ -38,6 +41,8 @@ public class PatientService implements IPatientService {
         }
 
         var savedPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+
+        billingServiceGrpcClient.createBillingAccount(savedPatient.getId().toString(), savedPatient.getName(), savedPatient.getEmail());
         return PatientMapper.toDTO(savedPatient);
     }
 
