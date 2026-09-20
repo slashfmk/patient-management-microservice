@@ -73,37 +73,11 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Protobuf / gRPC code generation -->
+
+
             <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
+                <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-
-                <configuration>
-
-                    <protocArtifact>
-                        com.google.protobuf:protoc:4.31.1:exe:${os.detected.classifier}
-                    </protocArtifact>
-
-                    <pluginId>grpc-java</pluginId>
-
-                    <pluginArtifact>
-                        io.grpc:protoc-gen-grpc-java:1.75.0:exe:${os.detected.classifier}
-                    </pluginArtifact>
-
-                </configuration>
-
-                <executions>
-
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-
-                </executions>
-
             </plugin>
 
         </plugins>

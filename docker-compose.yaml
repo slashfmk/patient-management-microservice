@@ -14,6 +14,22 @@ services:
     networks:
       - internal
 
+
+  billing-service:
+    build: ./billing-service
+    ports:
+      - "4001:4001"
+      - "9001:9001"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/db
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_SQL_INIT_MODE: always
+
+    networks:
+      - internal
+
   patient-service-db:
     image: postgres:latest
     ports:
