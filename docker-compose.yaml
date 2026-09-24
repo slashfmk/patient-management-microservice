@@ -17,21 +17,60 @@ services:
     networks:
       - internal
 
-
   billing-service:
     build: ./billing-service
     ports:
       - "4001:4001"
       - "9001:9001"
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/db
-#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      SPRING_SQL_INIT_MODE: always
-
     networks:
       - internal
+
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+
+  kafka:
+    image: apache/kafka:4.3.1
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      # Listeners
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # Single-node development configuration
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Topic defaults
+      KAFKA_NUM_PARTITIONS: 3
+
+    volumes:
+      - patient-data:/var/lib/kafka/data
+    networks:
+      - internal
+
 
   patient-service-db:
     image: postgres:latest
@@ -44,12 +83,11 @@ services:
     networks:
       - internal
     volumes:
-      - patient-service-db-data:/var/lib/postgresql
+      - patient-data:/var/lib/postgresql
 
 networks:
   internal:
     driver: bridge
 
 volumes:
-  patient-service-db-data:
-
+  patient-data:
