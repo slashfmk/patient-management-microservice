@@ -11,6 +11,7 @@ services:
       SPRING_SQL_INIT_MODE: always
       BILLING_SERVICE_ADDRESS: billing-service
       BILLING_SERVICE_GRPC_PORT: 9001
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - patient-service-db
       - billing-service
@@ -26,24 +27,10 @@ services:
       - internal
 
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-    ports:
-      - "8080:8080"
-    depends_on:
-      - kafka
-    networks:
-      - internal
-
-
   kafka:
     image: apache/kafka:4.3.1
-    container_name: kafka
-    hostname: kafka
+#    container_name: kafka
+#    hostname: kafka
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -54,7 +41,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       # Listeners
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -64,10 +51,23 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       # Topic defaults
-      KAFKA_NUM_PARTITIONS: 3
-
+      KAFKA_NUM_PARTITIONS: 1
     volumes:
-      - patient-data:/var/lib/kafka/data
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - internal
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: 'true'
     networks:
       - internal
 
@@ -91,3 +91,4 @@ networks:
 
 volumes:
   patient-data:
+  kafka-data:

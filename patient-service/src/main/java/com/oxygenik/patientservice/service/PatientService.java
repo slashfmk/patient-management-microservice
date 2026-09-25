@@ -5,6 +5,7 @@ import com.oxygenik.patientservice.dto.PatientResponseDTO;
 import com.oxygenik.patientservice.exception.EmailAlreadyExistsException;
 import com.oxygenik.patientservice.exception.PatientNotFoundException;
 import com.oxygenik.patientservice.grpc.BillingServiceGrpcClient;
+import com.oxygenik.patientservice.kafka.KafkaProducer;
 import com.oxygenik.patientservice.mapper.PatientMapper;
 import com.oxygenik.patientservice.model.Patient;
 import com.oxygenik.patientservice.repository.PatientRepository;
@@ -19,10 +20,16 @@ public class PatientService implements IPatientService {
 
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
+    private final KafkaProducer kafkaProducer;
 
-    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
+    public PatientService(
+            PatientRepository patientRepository,
+            BillingServiceGrpcClient billingServiceGrpcClient,
+            KafkaProducer kafkaProducer)
+    {
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<PatientResponseDTO> getPatients() {
@@ -43,6 +50,9 @@ public class PatientService implements IPatientService {
         var savedPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
 
         billingServiceGrpcClient.createBillingAccount(savedPatient.getId().toString(), savedPatient.getName(), savedPatient.getEmail());
+
+        kafkaProducer.sendEvent(savedPatient);
+
         return PatientMapper.toDTO(savedPatient);
     }
 
