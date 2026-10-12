@@ -18,6 +18,17 @@ services:
     networks:
       - internal
 
+
+  analytics-service:
+    build: ./analytics-service
+    container_name: analytics-service
+    ports:
+      - "4002:4002"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - internal
+
   billing-service:
     build: ./billing-service
     ports:
@@ -29,8 +40,8 @@ services:
 
   kafka:
     image: apache/kafka:4.3.1
-#    container_name: kafka
-#    hostname: kafka
+    container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -84,6 +95,8 @@ services:
       - internal
     volumes:
       - patient-data:/var/lib/postgresql
+
+
 
 networks:
   internal:
